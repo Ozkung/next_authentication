@@ -1,0 +1,10 @@
+.intereactive_box {
+    margin-top: 14px;
+    width: 90%;
+}
+
+.flex_login {
+    display: flex;
+    flex-direction: column;
+    row-gap: 14px;
+}

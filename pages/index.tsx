@@ -1,33 +1,42 @@
 import Head from 'next/head'
-import clientPromise from '../lib/mongodb'
-import { InferGetServerSidePropsType } from 'next'
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import styled from '../public/css/styled.module.css'
+import { Backdrop, Button, Fade, TextField, Typography } from '@mui/material'
+import { useState } from 'react'
+import axios from 'axios'
 
-export async function getServerSideProps(context) {
-  try {
-    await clientPromise
-    // `await clientPromise` will use the default database passed in the MONGODB_URI
-    // However you can use another database (e.g. myDatabase) by replacing the `await clientPromise` with the following code:
-    //
-    // `const client = await clientPromise`
-    // `const db = client.db("myDatabase")`
-    //
-    // Then you can execute queries against your database like so:
-    // db.find({}) or any of the MongoDB Node Driver commands
 
-    return {
-      props: { isConnected: true },
+const bgSolution = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+export default function Home() {
+  
+  const [user , setUser] = useState('');
+  const [pass , setPass] = useState('');
+  const [modal, setModal] = useState(false);
+  const handleModal = () => setModal(true);
+  const closeModal = () => setModal(false);
+
+  async function handlevent(event: any) {
+    event.preventDefault();
+    let obj = {
+      user: user,
+      pass: pass
     }
-  } catch (e) {
-    console.error(e)
-    return {
-      props: { isConnected: false },
-    }
+    let res = await axios.post('http://localhost:3000/api/regis',obj)
+    console.log('res', res.data.payload)
   }
-}
 
-export default function Home({
-  isConnected,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <div className="container">
       <Head>
@@ -37,56 +46,50 @@ export default function Home({
 
       <main>
         <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js with MongoDB!</a>
+          Welcome to Cinemo
         </h1>
 
-        {isConnected ? (
-          <h2 className="subtitle">You are connected to MongoDB</h2>
-        ) : (
-          <h2 className="subtitle">
-            You are NOT connected to MongoDB. Check the <code>README.md</code>{' '}
-            for instructions.
-          </h2>
-        )}
+          <form onSubmit={event => handlevent(event)}>
+            <div className={styled.intereactive_box}>
+              <TextField fullWidth label="Username" name="user" onChange={e => setUser(e.target.value)} value={user}/>
+            </div>
+            <div className={styled.intereactive_box}>
+              <TextField fullWidth label="Password" type='password' name="pass" onChange={e => setPass(e.target.value)} value={pass}/>
+            </div>
+            <div className={`${styled.intereactive_box} ${styled.flex_login}`}>
+              <Button size="medium" variant="contained" type="submit">Login</Button>
+              <Button size="medium" variant="contained" onClick={handleModal}>Registor</Button>
+            </div>
+          </form>
 
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+      <Modal 
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description" 
+        open={modal} 
+        onClose={closeModal} 
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={modal}>
+          <Box sx={bgSolution}>
+            <Typography id="transition-modal-title" variant="h6" component="h2">
+              Text in a modal
+            </Typography>
+            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            </Typography>
+          </Box>
+        </Fade>
+      </Modal>
       </main>
 
-      <footer>
+
+      {/* <footer>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
           target="_blank"
@@ -95,7 +98,7 @@ export default function Home({
           Powered by{' '}
           <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
         </a>
-      </footer>
+      </footer> */}
 
       <style jsx>{`
         .container {
@@ -154,7 +157,7 @@ export default function Home({
         .title {
           margin: 0;
           line-height: 1.15;
-          font-size: 4rem;
+          font-size: 2rem;
         }
 
         .title,
