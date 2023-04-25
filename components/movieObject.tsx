@@ -10,9 +10,9 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-export default function movieObject(render: any) {
+export default function movieObject(props: any, read: Function) {
   const [favor, setFavor] = useState(false);
-  const [modal, setModal] = useState(false);
+
   async function saveList(event: any) {
     event.stopPropagation();
     setFavor(!favor);
@@ -25,13 +25,13 @@ export default function movieObject(render: any) {
       <Card sx={{ maxWidth: 345 }} style={{ cursor: "context-menu" }}>
         <CardActionArea
           disableRipple
-          onClick={openmodal}
+          //   onClick={openmodal}
           style={{ cursor: "context-menu" }}
         >
           <CardMedia
             component="img"
             height="545"
-            image={render.render.poster_url}
+            image={props.render.poster_url}
             alt="green iguana"
           />
           <CardContent>
@@ -41,7 +41,7 @@ export default function movieObject(render: any) {
               component="div"
               className={styled.flex_title}
             >
-              {render.render.title_en}
+              {props.render.title_en}
             </Typography>
             <Typography
               component="div"
@@ -49,7 +49,7 @@ export default function movieObject(render: any) {
               color="text.secondary"
               className={styled.detail_length}
             >
-              {render.render.synopsis_en}
+              {props.render.synopsis_en}
             </Typography>
             <div className={styled.flex_grid}>
               <div
@@ -58,7 +58,9 @@ export default function movieObject(render: any) {
               >
                 <FavoriteIcon color={favor ? "error" : "disabled"} />
               </div>
-              <div className={styled.colorPrime}>Read more</div>
+              <div className={styled.colorPrime} onClick={props.read}>
+                Read more
+              </div>
             </div>
           </CardContent>
         </CardActionArea>
