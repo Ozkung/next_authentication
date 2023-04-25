@@ -1,40 +1,61 @@
-import Head from 'next/head'
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import styled from '../public/css/styled.module.css'
-import { Backdrop, Button, Fade, TextField, Typography } from '@mui/material'
-import { useState } from 'react'
-import axios from 'axios'
-
+import Head from "next/head";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import styled from "../public/css/styled.module.css";
+import { Backdrop, Button, Fade, TextField, Typography } from "@mui/material";
+import { useState } from "react";
+import Spline from "@splinetool/react-spline";
+import axios from "axios";
+import { getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const bgSolution = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
+  bgcolor: "background.paper",
+  borderRadius: "5px",
   boxShadow: 24,
   p: 4,
 };
 
 export default function Home() {
-  
-  const [user , setUser] = useState('');
-  const [pass , setPass] = useState('');
+  const router = useRouter();
+  // login
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  // register
+  const [user, setUser] = useState("");
+  const [pass, setPass] = useState("");
   const [modal, setModal] = useState(false);
   const handleModal = () => setModal(true);
   const closeModal = () => setModal(false);
-
+  // login function
   async function handlevent(event: any) {
     event.preventDefault();
-    let obj = {
-      user: user,
-      pass: pass
+    const payload = { username, password };
+    const login: any = await signIn("credentials", {
+      ...payload,
+      redirect: false,
+    });
+    console.log("login :", login);
+    if (login.ok == false) {
+      return router.replace("/");
     }
-    let res = await axios.post('http://localhost:3000/api/regis',obj)
-    console.log('res', res.data.payload)
+    return router.replace("/movie");
+  }
+  // register function
+  async function handlRegis(event: any) {
+    event.preventDefault();
+    let obj = {
+      name: user,
+      pass: pass,
+    };
+    let res = await axios.post("http://localhost:3000/api/regis", obj);
+    // console.log("res", res.data.payload);
+    setModal(false);
   }
 
   return (
@@ -43,51 +64,99 @@ export default function Home() {
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
+      <Spline
+        className={styled.ab_3d}
+        scene="https://prod.spline.design/98dmVaVMDDibK01v/scene.splinecode"
+      />
       <main>
-        <h1 className="title">
-          Welcome to Cinemo
-        </h1>
-
-          <form onSubmit={event => handlevent(event)}>
+        <h1 className="title">Welcome to Cinemo</h1>
+        <div className={styled.bg_controller}>
+          <form onSubmit={(event) => handlevent(event)}>
             <div className={styled.intereactive_box}>
-              <TextField fullWidth label="Username" name="user" onChange={e => setUser(e.target.value)} value={user}/>
+              <TextField
+                fullWidth
+                label="Username"
+                name="user"
+                onChange={(e) => setUsername(e.target.value)}
+                value={username}
+              />
             </div>
             <div className={styled.intereactive_box}>
-              <TextField fullWidth label="Password" type='password' name="pass" onChange={e => setPass(e.target.value)} value={pass}/>
+              <TextField
+                fullWidth
+                label="Password"
+                type="password"
+                name="pass"
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+              />
             </div>
             <div className={`${styled.intereactive_box} ${styled.flex_login}`}>
-              <Button size="medium" variant="contained" type="submit">Login</Button>
-              <Button size="medium" variant="contained" onClick={handleModal}>Registor</Button>
+              <Button size="medium" variant="contained" type="submit">
+                Login
+              </Button>
+              <Button size="medium" variant="contained" onClick={handleModal}>
+                Registor
+              </Button>
             </div>
           </form>
+        </div>
 
-      <Modal 
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description" 
-        open={modal} 
-        onClose={closeModal} 
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Fade in={modal}>
-          <Box sx={bgSolution}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
-              Text in a modal
-            </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
-          </Box>
-        </Fade>
-      </Modal>
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          open={modal}
+          onClose={closeModal}
+          closeAfterTransition
+          slots={{ backdrop: Backdrop }}
+          slotProps={{
+            backdrop: {
+              timeout: 500,
+            },
+          }}
+        >
+          <Fade in={modal}>
+            <Box sx={bgSolution}>
+              <Typography
+                id="transition-modal-title"
+                variant="h6"
+                component="h2"
+              >
+                Register
+              </Typography>
+              <div className={styled.intereactive_box}>
+                <TextField
+                  fullWidth
+                  label="Username"
+                  name="name"
+                  onChange={(e) => setUser(e.target.value)}
+                  value={user}
+                />
+              </div>
+              <div className={styled.intereactive_box}>
+                <TextField
+                  fullWidth
+                  label="Password"
+                  type="password"
+                  name="pass"
+                  onChange={(e) => setPass(e.target.value)}
+                  value={pass}
+                />
+              </div>
+              <div className={styled.intereactive_box}>
+                <Button
+                  fullWidth
+                  size="medium"
+                  variant="contained"
+                  onClick={(event) => handlRegis(event)}
+                >
+                  Register
+                </Button>
+              </div>
+            </Box>
+          </Fade>
+        </Modal>
       </main>
-
 
       {/* <footer>
         <a
@@ -157,7 +226,10 @@ export default function Home() {
         .title {
           margin: 0;
           line-height: 1.15;
-          font-size: 2rem;
+          font-size: 3rem;
+          color: #fff;
+          margin-bottom: 15px;
+          text-shadow: 3px 3px #00000079;
         }
 
         .title,
@@ -250,5 +322,5 @@ export default function Home() {
         }
       `}</style>
     </div>
-  )
+  );
 }
