@@ -31,6 +31,7 @@ export default async function handler(
         user: user,
         pass: encryptPassword,
         token: usertoken,
+        favorite: [],
         createDate: new Date().toISOString(),
       };
       const client = await clientPromise;

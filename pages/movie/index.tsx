@@ -1,5 +1,5 @@
 import Button from "@mui/material/Button";
-import { GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
 import { getSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -67,15 +67,20 @@ export default function movie(props: any) {
   );
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const url = "https://www.majorcineplex.com/apis/get_movie_avaiable";
   const response = await axios.get(url);
   let session: any = await getSession();
 
-  console.log("session :", session);
-  let data = session == null ? { movies: false } : response.data;
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
 
-  console.log("reqp :", data);
   const res = JSON.parse(JSON.stringify(response.data));
 
   //   if (session == null) window.open("/");
