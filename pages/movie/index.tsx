@@ -6,7 +6,10 @@ import axios from "axios";
 import styled from "../../public/css/styled.module.css";
 import MovieObject from "../../components/movieObject";
 import { useEffect, useState } from "react";
-import { Box, Modal, Typography } from "@mui/material";
+import { Box, Modal, Tab, Typography } from "@mui/material";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
 
 const bgSolution = {
   position: "absolute" as "absolute",
@@ -75,17 +78,17 @@ export default function movie(props: any) {
   const [modal, setModal] = useState(false);
   let [favor, setFavor] = useState(exsampleUser);
 
+  let urls: string = `http://localhost:3000/api/favor?id=${props.user.id}`;
+  async function api() {
+    let resp: any = await fetch(urls)
+      .then((res) => res.json())
+      .then((resJSON) => {
+        // console.log("resJSON :", resJSON);
+        setFavor(resJSON.payload);
+        setMove(props.data.movies);
+      });
+  }
   useEffect(() => {
-    let urls: string = `http://localhost:3000/api/favor?id=${props.user.id}`;
-    async function api() {
-      let resp: any = await fetch(urls)
-        .then((res) => res.json())
-        .then((resJSON) => {
-          console.log("resJSON :", resJSON);
-          setFavor(resJSON.payload);
-          setMove(props.data.movies);
-        });
-    }
     api();
   }, []);
   const openModal = (item: any) => {
@@ -98,6 +101,12 @@ export default function movie(props: any) {
     return router.replace("/");
   }
 
+  const [value, setValue] = useState("1");
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+  };
+
   return (
     <>
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -106,19 +115,55 @@ export default function movie(props: any) {
           Logout
         </Button>
       </div>
-      <div className={styled.flex_movie}>
-        {movies.map((item: any, index: number) => {
-          return (
-            <MovieObject
-              render={item}
-              id={props.user.id}
-              favor={favor.favorite}
-              read={openModal}
-              key={index}
-            />
-          );
-        })}
-      </div>
+
+      <Box sx={{ width: "100%", typography: "body1" }}>
+        <TabContext value={value}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <TabList onChange={handleChange} aria-label="lab API tabs example">
+              <Tab label="All movie" value="1" />
+              <Tab label="Favorite movie" value="2" />
+            </TabList>
+          </Box>
+          <TabPanel value="1">
+            <div className={styled.flex_movie}>
+              {movies.map((item: any, index: number) => {
+                return (
+                  <MovieObject
+                    render={item}
+                    id={props.user.id}
+                    favor={favor.favorite}
+                    read={openModal}
+                    fetch={api}
+                    key={index}
+                  />
+                );
+              })}
+            </div>
+          </TabPanel>
+          <TabPanel value="2">
+            <div className={styled.flex_movie}>
+              {favor.favorite.map((item: any, index: number) => {
+                for (let i in movies) {
+                  const { id } = movies[i];
+                  if (id == item) {
+                    return (
+                      <MovieObject
+                        render={movies[i]}
+                        id={props.user.id}
+                        favor={favor.favorite}
+                        read={openModal}
+                        fetch={api}
+                        key={i}
+                      />
+                    );
+                  }
+                }
+              })}
+            </div>
+          </TabPanel>
+        </TabContext>
+      </Box>
+
       <Modal open={modal} onClose={closeModal}>
         <Box sx={bgSolution}>
           <div className={styled.popout_movie}>
