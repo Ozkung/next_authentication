@@ -11,7 +11,9 @@ import axios from "axios";
 import { useState } from "react";
 
 export default function movieObject(props: any) {
-  const [favor, setFavor] = useState(false);
+  const [favor, setFavor] = useState(
+    props.favor.includes(parseInt(props.render.id))
+  );
   async function saveList(event: any) {
     event.stopPropagation();
     await axios.post("http://localhost:3000/api/favor", {

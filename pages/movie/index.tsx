@@ -20,9 +20,19 @@ const bgSolution = {
   p: "5px",
 };
 
+const exsampleUser = {
+  _id: "",
+  name: "",
+  pass: "",
+  token: "",
+  favorite: [],
+  createDate: "",
+};
+
 export default function movie(props: any) {
   const router = useRouter();
-  const { movies } = props.data;
+  const [movies, setMove] = useState([]);
+  // const {  } = props.data;
   const user = props.user.name;
   let [movieItem, setMovie] = useState({
     id: 1957,
@@ -63,7 +73,7 @@ export default function movie(props: any) {
     trailer_ivx_key: "2508534",
   });
   const [modal, setModal] = useState(false);
-  let [favor, setFavor] = useState({});
+  let [favor, setFavor] = useState(exsampleUser);
 
   useEffect(() => {
     let urls: string = `http://localhost:3000/api/favor?id=${props.user.id}`;
@@ -73,6 +83,7 @@ export default function movie(props: any) {
         .then((resJSON) => {
           console.log("resJSON :", resJSON);
           setFavor(resJSON.payload);
+          setMove(props.data.movies);
         });
     }
     api();
@@ -101,6 +112,7 @@ export default function movie(props: any) {
             <MovieObject
               render={item}
               id={props.user.id}
+              favor={favor.favorite}
               read={openModal}
               key={index}
             />
