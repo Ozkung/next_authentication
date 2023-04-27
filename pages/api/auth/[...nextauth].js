@@ -15,7 +15,6 @@ export default NextAuth({
           .db("member")
           .collection("member")
           .findOne({ name: username });
-
         const isMatch = await bcrypt.compare(password, user.pass);
 
         if (user && isMatch) {

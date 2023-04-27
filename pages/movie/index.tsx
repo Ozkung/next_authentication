@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import styled from "../../public/css/styled.module.css";
 import MovieObject from "../../components/movieObject";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Modal, Typography } from "@mui/material";
 
 const bgSolution = {
@@ -22,19 +22,11 @@ const bgSolution = {
 
 export default function movie(props: any) {
   const router = useRouter();
-  const { movies } = props;
-  const [user, setUser] = useState("");
+  const { movies } = props.data;
+  const user = props.user.name;
   const [modal, setModal] = useState(false);
-
   const openModal = () => setModal(true);
   const closeModal = () => setModal(false);
-  async function getUser() {
-    let session: any = await getSession();
-    setUser(session?.user?.name);
-    // if (session == null) return router.replace("/");
-  }
-  getUser();
-
   async function logout() {
     await signOut({ redirect: false });
     return router.replace("/");
@@ -42,15 +34,22 @@ export default function movie(props: any) {
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "end" }}>
-        <div className={styled.accountlog}>{user ? user : "waiting..."}</div>
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div className={styled.accountlog}>{user}</div>
         <Button variant="contained" onClick={logout}>
           Logout
         </Button>
       </div>
       <div className={styled.flex_movie}>
         {movies.map((item: any, index: number) => {
-          return <MovieObject render={item} read={openModal} key={index} />;
+          return (
+            <MovieObject
+              render={item}
+              id={props.user.id}
+              read={openModal}
+              key={index}
+            />
+          );
         })}
       </div>
       <Modal open={modal} onClose={closeModal}>
@@ -70,8 +69,7 @@ export default function movie(props: any) {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const url = "https://www.majorcineplex.com/apis/get_movie_avaiable";
   const response = await axios.get(url);
-  let session: any = await getSession();
-
+  const session: any = await getSession(ctx);
   if (!session) {
     return {
       redirect: {
@@ -81,7 +79,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  const res = JSON.parse(JSON.stringify(response.data));
+  const res = { user: session.user, data: response.data };
 
   //   if (session == null) window.open("/");
   return {

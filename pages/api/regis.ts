@@ -11,24 +11,22 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  // console.log(" req.method :", req.method);
   const { method } = req;
   switch (method) {
     case "GET":
       res.status(200).json({ payload: "John Doe" });
       break;
     case "POST":
-      const { user, pass } = req.body;
-
-      if (!(user && pass))
+      const { name, pass } = req.body;
+      if (!(name && pass))
         return res.status(400).json({ payload: "Input is require" });
 
       let encryptPassword = await bcrypt.hash(pass, 10);
-      const usertoken = jwt.sign({ name: user }, process.env.SECRET_KEY, {
+      const usertoken = jwt.sign({ name: name }, process.env.SECRET_KEY, {
         expiresIn: "2 days",
       });
       let obj = {
-        user: user,
+        name: name,
         pass: encryptPassword,
         token: usertoken,
         favorite: [],
@@ -36,7 +34,7 @@ export default async function handler(
       };
       const client = await clientPromise;
       const dbconnect = client.db("member");
-      let checkUser = await dbconnect.collection("member").findOne({ user });
+      let checkUser = await dbconnect.collection("member").findOne({ name });
       if (checkUser) {
         console.log("Return to Registor");
         return res.status(200).json({ payload: "User has already!" });

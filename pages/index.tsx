@@ -40,14 +40,14 @@ export default function Home() {
       ...payload,
       redirect: false,
     });
-    console.log("login :", login);
     if (login.ok == false) {
       return router.replace("/");
+    } else {
+      return router.replace("/movie");
     }
-    return router.replace("/movie");
   }
   // register function
-  async function handlRegis(event: any) {
+  const handleRegis = async (event: any) => {
     event.preventDefault();
     let obj = {
       name: user,
@@ -56,12 +56,11 @@ export default function Home() {
     let res = await axios.post("http://localhost:3000/api/regis", obj);
     // console.log("res", res.data.payload);
     setModal(false);
-  }
+  };
 
   return (
     <div className="container">
       <Head>
-        <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Spline
@@ -148,7 +147,7 @@ export default function Home() {
                   fullWidth
                   size="medium"
                   variant="contained"
-                  onClick={(event) => handlRegis(event)}
+                  onClick={(event) => handleRegis(event)}
                 >
                   Register
                 </Button>

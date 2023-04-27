@@ -3,22 +3,22 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import {
   Card,
   CardActionArea,
-  CardActions,
   CardContent,
   CardMedia,
   Typography,
 } from "@mui/material";
+import axios from "axios";
 import { useState } from "react";
 
-export default function movieObject(props: any, read: Function) {
+export default function movieObject(props: any) {
   const [favor, setFavor] = useState(false);
-
   async function saveList(event: any) {
     event.stopPropagation();
+    await axios.post("http://localhost:3000/api/favor", {
+      uid: props.id,
+      item_id: props.render.id,
+    });
     setFavor(!favor);
-  }
-  function openmodal() {
-    console.log("2 :", 2);
   }
   return (
     <>
