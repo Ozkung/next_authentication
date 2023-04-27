@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import clientPromise from "../../lib/mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
+import _ from "lodash";
 
 type Data = {
   payload: any;
@@ -31,12 +32,28 @@ export default async function handler(
         .db("member")
         .collection("member")
         .findOne({ _id: new ObjectId(uid) });
+
+      let killport = userShow.favorite.find((item: any) => item == item_id);
+      if (killport) {
+        let clone = _.cloneDeep(userShow.favorite);
+        let index = _.indexOf(clone, item_id);
+        clone.splice(index, 1);
+        await client
+          .db("member")
+          .collection("member")
+          .updateOne({ _id: new ObjectId(uid) }, { $set: { favorite: clone } });
+        return res.status(200).json({ payload: "kill that" });
+      }
+
       userShow.favorite.push(item_id);
-      let entity: any = new Set(userShow.favorite);
+
       const dataPost = await client
         .db("member")
         .collection("member")
-        .updateOne({ _id: new ObjectId(uid) }, { $set: { favorite: entity } });
+        .updateOne(
+          { _id: new ObjectId(uid) },
+          { $set: { favorite: _.uniq(userShow.favorite) } }
+        );
       res.status(200).json({ payload: dataPost.acknowledged });
       break;
 

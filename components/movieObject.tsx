@@ -58,7 +58,10 @@ export default function movieObject(props: any) {
               >
                 <FavoriteIcon color={favor ? "error" : "disabled"} />
               </div>
-              <div className={styled.colorPrime} onClick={props.read}>
+              <div
+                className={styled.colorPrime}
+                onClick={(event) => props.read(props.render)}
+              >
                 Read more
               </div>
             </div>

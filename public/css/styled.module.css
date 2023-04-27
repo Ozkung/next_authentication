@@ -61,3 +61,10 @@
   justify-content: space-between;
   align-items: center;
 }
+
+.popout_movie {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 776px;
+}
