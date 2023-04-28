@@ -65,7 +65,7 @@ export default function Home() {
       </Head>
       <Spline
         className={styled.ab_3d}
-        scene="https://prod.spline.design/98dmVaVMDDibK01v/scene.splinecode"
+        scene="https://draft.spline.design/WwS7WSPKa9U1OLbY/scene.splinecode"
       />
       <main>
         <h1 className="title">Welcome to Cinemo</h1>
