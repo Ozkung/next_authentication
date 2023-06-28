@@ -16,7 +16,7 @@ export default function movieObject(props: any) {
   );
   async function saveList(event: any) {
     event.stopPropagation();
-    let res = await axios.post("http://localhost:3000/api/favor", {
+    let res = await axios.post("/api/favor", {
       uid: props.id,
       item_id: props.render.id,
     });

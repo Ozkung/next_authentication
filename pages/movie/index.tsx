@@ -78,7 +78,7 @@ export default function movie(props: any) {
   const [modal, setModal] = useState(false);
   let [favor, setFavor] = useState(exsampleUser);
 
-  let urls: string = `http://localhost:3000/api/favor?id=${props.user.id}`;
+  let urls: string = `/api/favor?id=${props.user.id}`;
   async function api() {
     let resp: any = await fetch(urls)
       .then((res) => res.json())
@@ -115,7 +115,6 @@ export default function movie(props: any) {
           Logout
         </Button>
       </div>
-
       <Box sx={{ width: "100%", typography: "body1" }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -163,7 +162,6 @@ export default function movie(props: any) {
           </TabPanel>
         </TabContext>
       </Box>
-
       <Modal open={modal} onClose={closeModal}>
         <Box sx={bgSolution}>
           <div className={styled.popout_movie}>

@@ -53,7 +53,7 @@ export default function Home() {
       name: user,
       pass: pass,
     };
-    let res = await axios.post("http://localhost:3000/api/regis", obj);
+    let res = await axios.post("/api/regis", obj);
     // console.log("res", res.data.payload);
     setModal(false);
   };
